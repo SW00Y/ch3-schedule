@@ -12,11 +12,11 @@ public class ScheduleRequestDto {
     private Long user_id;
     private String name;
 
-    @NotBlank(message = "내용은 필수값입니다.")
-    @Size(max = 200, message = "내용은 200자 이내로 작성해야합니다.")
+    @NotBlank(message = "REQUEST_DTO_ERROR_CONTENT_NULL")
+    @Size(max = 200, message = "REQUEST_DTO_ERROR_SIZE_200")
     private String content;
 
-    @NotBlank(message = "비밀번호는 필수값입니다.")
+    @NotBlank(message = "REQUEST_DTO_ERROR_PWD_NULL")
     private String pwd;
 
     private Timestamp add_log;

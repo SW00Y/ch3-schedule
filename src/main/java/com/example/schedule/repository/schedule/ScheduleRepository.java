@@ -17,7 +17,7 @@ public interface ScheduleRepository {
 
     List<ScheduleResponseDto> findScheduleByUserId(Long id);
 
-    Optional<String> findUserPwd(Long id, String password);
+    Optional<String> findUserPwd(Long id);
 
     Optional<String> findUserName(Long userId);
 

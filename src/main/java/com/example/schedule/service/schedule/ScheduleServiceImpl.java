@@ -8,7 +8,6 @@ import com.example.schedule.exception.ExceptionErrorCode;
 import com.example.schedule.repository.schedule.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +21,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         this.scheduleRepository = scheduleRepository;
     }
 
+    /*******************************
+     * requestDto 데이터로 Schedule 저장 - SimpleJDBC 사용
+     *******************************/
     @Override
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto requestDto) {
         String userName = findUser(requestDto.getUser_id());
@@ -35,46 +37,68 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.saveSchedule(schedule);
     }
 
+    /*******************************
+     * 일정 전체 조회
+     *******************************/
     @Override
     public List<ScheduleResponseDto> findAllSchedule() {
         List<ScheduleResponseDto> allSchedule = scheduleRepository.findAllSchedules();
         return allSchedule;
     }
 
+    /*******************************
+     * 일정id 조건 조회
+     *******************************/
     @Override
     public ScheduleResponseDto findScheduleById(Long id) {
         Schedule schedule = getScheduleOrThrow(id);
         return new ScheduleResponseDto(schedule);
     }
 
+    /*******************************
+     * 일정userId 조건 조회
+     *******************************/
     @Override
     public List<ScheduleResponseDto> findScheduleByUserId(Long id) {
         List<ScheduleResponseDto> allUserIdSchedule = scheduleRepository.findScheduleByUserId(id);
         return allUserIdSchedule;
     }
 
+    /*******************************
+     * 일정 수정
+     *******************************/
     @Transactional
     @Override
     public ScheduleResponseDto updateSchedule(Long id,ScheduleRequestDto requestDto) {
 
-        checkContent(requestDto.getContent());
-        validatePassword(id, requestDto.getPwd());
+        //예외처리 영역
+        checkContent(requestDto.getContent());  //content 내용이 null인지 확인
+        validatePassword(id, requestDto.getPwd()); //id, pwd가 일치하는지 확인
 
+        
         scheduleRepository.updateSchedule(id, requestDto.getContent());
-        Schedule schedule = getScheduleOrThrow(id);
+        Schedule schedule = getScheduleOrThrow(id); //변경 후 결과값
         return new ScheduleResponseDto(schedule);
     }
 
+    /*******************************
+     * 일정 삭제
+     *******************************/
     @Override
     public void deleteSchedule(Long id, String pwd) {
-        validatePassword(id, pwd);
+        validatePassword(id, pwd);  //id, pwd 일치 확인
         scheduleRepository.deleteSchedule(id);
     }
 
+    /*******************************
+     * 일정 조회 - 페이지네이션
+     * pageNum, pageSize 수신 후 Repository 전달
+     *******************************/
     @Override
     public List<ScheduleResponseDto> findSchedulesPage(int pageNum, int pageSize) {
         List<ScheduleResponseDto> schedules = scheduleRepository.findSchedulesPage(pageNum, pageSize);
 
+        //쿼리 실행 결과가 비어있는 경우 emptyList 반환
         if (schedules.isEmpty()) {
             return Collections.emptyList();
         }
@@ -83,21 +107,34 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
 
-    // 처리용 메소드
+    /*******************************
+     * 예외처리 위한 메소드 목록
+     *******************************/
+
+
+    /*******************************
+     * content 값이 null인 경우 예외처리
+     *******************************/
     public void checkContent(String content){
         if(content==null){
             throw new CustomException(ExceptionErrorCode.CONTENT_NULL);
         }
     }
 
+    /*******************************
+     * 찾고자 하는 id의 일정이 존재하지 않는 경우 예외처리
+     *******************************/
     private Schedule getScheduleOrThrow(Long id) {
         return scheduleRepository.findScheduleById(id)
                 .orElseThrow(() -> new CustomException(ExceptionErrorCode.SCHEDULE_NOT_FOUND));
     }
 
 
+    /*******************************
+     * 수정/삭제의 id,pwd가 일치하지 않을경우, 해당 id가 존재하지 않을 경우 예외처리
+     *******************************/
     private void validatePassword(Long id, String pwd) {
-        Optional<String> storedPwd = scheduleRepository.findUserPwd(id,pwd);
+        Optional<String> storedPwd = scheduleRepository.findUserPwd(id);
 
         if(storedPwd.isEmpty()){
             throw new CustomException(ExceptionErrorCode.SCHEDULE_NOT_FOUND);
@@ -108,6 +145,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
     }
 
+    /*******************************
+     * 일정의 userId값으로 조회 시 없는경우 예외처리
+     *******************************/
     private String findUser(Long id) {
         Optional<String> userName = scheduleRepository.findUserName(id);
 
