@@ -1,7 +1,7 @@
-package com.example.springbasiclayered.service;
+package com.example.schedule.service;
 
-import com.example.springbasiclayered.dto.ScheduleRequestDto;
-import com.example.springbasiclayered.dto.ScheduleResponseDto;
+import com.example.schedule.dto.ScheduleRequestDto;
+import com.example.schedule.dto.ScheduleResponseDto;
 
 import java.util.List;
 

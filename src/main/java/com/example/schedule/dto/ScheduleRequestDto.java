@@ -1,13 +1,10 @@
-package com.example.springbasiclayered.dto;
+package com.example.schedule.dto;
 
 import lombok.Getter;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
-/**
- * Memo 요청 DTO
- */
+
 @Getter
 public class ScheduleRequestDto {
 

@@ -1,14 +1,12 @@
-package com.example.springbasiclayered.repository;
+package com.example.schedule.repository;
 
-import com.example.springbasiclayered.dto.ScheduleResponseDto;
-import com.example.springbasiclayered.entity.Schedule;
-import org.springframework.http.HttpStatus;
+import com.example.schedule.dto.ScheduleResponseDto;
+import com.example.schedule.entity.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -57,17 +55,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         String sql = "SELECT a.id, a.user_id, b.name, a.content, a.pwd, a.add_log, a.upp_log " +
                 "FROM schedule a JOIN user b ON a.user_id = b.id WHERE a.id = ?";
         List<Schedule> result = jdbcTemplate.query(sql, scheduleRowMapperV2(), id);
-        return result.stream().findAny();
-    }
-
-    @Override
-    public Schedule findScheduleByIdOrElseThrow(Long id) {
-        String sql = "SELECT a.id, a.user_id, b.name, a.content, a.pwd, a.add_log, a.upp_log " +
-                "FROM schedule a JOIN user b ON a.user_id = b.id WHERE a.id = ?";
-
-        List<Schedule> result = jdbcTemplate.query(sql, scheduleRowMapperV2(), id);
-
-        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id));
+        return result.stream().findFirst();
     }
 
     @Override
@@ -79,26 +67,19 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     }
 
     @Override
+    public Optional<String> findUserPwd(Long id, String pwd) {
+        String sql = "SELECT pwd FROM schedule WHERE id = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, String.class, id));
+    }
+
+    @Override
     public int updateSchedule(Long id, String content, String pwd) {
-
-
-        String getPwdSql = "SELECT pwd FROM schedule WHERE id = ?";
-        String schedulePwd = jdbcTemplate.queryForObject(getPwdSql, String.class, id);
-
-        if (schedulePwd == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "그런 일정이 없음");
-        }
-
-        if (!schedulePwd.equals(pwd)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
-        }
-
         return jdbcTemplate.update("update schedule set content =?, upp_log =? where id=?", content, Timestamp.valueOf(LocalDateTime.now()), id);
     }
 
     @Override
     public int deleteSchedule(Long id, String pwd) {
-        return jdbcTemplate.update("delete from schedule where id=?", id);
+        return jdbcTemplate.update("delete from schedule where id=? and pwd =?", id,pwd);
     }
 
     private RowMapper<ScheduleResponseDto> scheduleRowMapper() {

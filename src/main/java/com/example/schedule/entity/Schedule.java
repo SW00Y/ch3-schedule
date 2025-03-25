@@ -1,9 +1,8 @@
-package com.example.springbasiclayered.entity;
+package com.example.schedule.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -26,10 +25,6 @@ public class Schedule {
         this.pwd = pwd;
         this.add_log = Timestamp.valueOf(LocalDateTime.now());
         this.upp_log = Timestamp.valueOf(LocalDateTime.now());
-    }
-
-    public void update(String content) {
-        this.content = content;
     }
 
 }

@@ -1,8 +1,8 @@
-package com.example.springbasiclayered.controller;
+package com.example.schedule.controller;
 
-import com.example.springbasiclayered.dto.ScheduleRequestDto;
-import com.example.springbasiclayered.dto.ScheduleResponseDto;
-import com.example.springbasiclayered.service.ScheduleService;
+import com.example.schedule.dto.ScheduleRequestDto;
+import com.example.schedule.dto.ScheduleResponseDto;
+import com.example.schedule.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/schedules") // Prefix
+@RequestMapping("/schedules")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
@@ -52,8 +52,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable Long id, String pwd) {
-
+    public ResponseEntity<Void> deleteSchedule(@PathVariable Long id, @RequestParam String pwd) {
         scheduleService.deleteSchedule(id, pwd);
         return new ResponseEntity<>(HttpStatus.OK);
     }

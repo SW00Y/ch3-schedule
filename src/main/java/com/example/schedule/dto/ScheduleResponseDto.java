@@ -1,6 +1,6 @@
-package com.example.springbasiclayered.dto;
+package com.example.schedule.dto;
 
-import com.example.springbasiclayered.entity.Schedule;
+import com.example.schedule.entity.Schedule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

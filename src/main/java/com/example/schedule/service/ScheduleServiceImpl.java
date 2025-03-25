@@ -1,9 +1,11 @@
-package com.example.springbasiclayered.service;
+package com.example.schedule.service;
 
-import com.example.springbasiclayered.dto.ScheduleRequestDto;
-import com.example.springbasiclayered.dto.ScheduleResponseDto;
-import com.example.springbasiclayered.entity.Schedule;
-import com.example.springbasiclayered.repository.ScheduleRepository;
+import com.example.schedule.dto.ScheduleRequestDto;
+import com.example.schedule.dto.ScheduleResponseDto;
+import com.example.schedule.entity.Schedule;
+import com.example.schedule.exception.CustomException;
+import com.example.schedule.exception.ExceptionErrorCode;
+import com.example.schedule.repository.ScheduleRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +41,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleResponseDto findScheduleById(Long id) {
-        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
+        Schedule schedule = getScheduleOrThrow(id);
         return new ScheduleResponseDto(schedule);
     }
 
@@ -52,24 +54,40 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     @Override
     public ScheduleResponseDto updateSchedule(Long id, String content, String pwd) {
-        if (content == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The title and content are required values.");
-        }
-        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
-
-        int updatedRow = scheduleRepository.updateSchedule(schedule.getId(), content, pwd);
-        if (updatedRow == 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id);
-        }
+        checkContent(content);
+        validatePassword(id, pwd);
+        scheduleRepository.updateSchedule(id, content, pwd);
+        Schedule schedule = getScheduleOrThrow(id);
         return new ScheduleResponseDto(schedule);
     }
 
-
     @Override
     public void deleteSchedule(Long id, String pwd) {
-        int deletedRow = scheduleRepository.deleteSchedule(id, pwd);
-        if (deletedRow == 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id);
+        validatePassword(id, pwd);
+        scheduleRepository.deleteSchedule(id, pwd);
+    }
+
+    
+    // 처리용 메소드
+    public void checkContent(String content){
+        if(content==null){
+            throw new CustomException(ExceptionErrorCode.CONTENT_NULL);
         }
     }
+
+    private Schedule getScheduleOrThrow(Long id) {
+        return scheduleRepository.findScheduleById(id)
+                .orElseThrow(() -> new CustomException(ExceptionErrorCode.SCHEDULE_NOT_FOUND));
+    }
+
+    private void validatePassword(Long id, String pwd) {
+        String storedPwd = scheduleRepository.findUserPwd(id,pwd)
+                .orElseThrow(() -> new CustomException(ExceptionErrorCode.SCHEDULE_NOT_FOUND));
+
+        if (!storedPwd.equals(pwd)) {
+            throw new CustomException(ExceptionErrorCode.PASSWORD_ERROR);
+        }
+    }
+
+
 }

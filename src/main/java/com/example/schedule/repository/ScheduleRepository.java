@@ -1,7 +1,7 @@
-package com.example.springbasiclayered.repository;
+package com.example.schedule.repository;
 
-import com.example.springbasiclayered.dto.ScheduleResponseDto;
-import com.example.springbasiclayered.entity.Schedule;
+import com.example.schedule.dto.ScheduleResponseDto;
+import com.example.schedule.entity.Schedule;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +14,9 @@ public interface ScheduleRepository {
 
     Optional<Schedule> findScheduleById(Long id);
 
-    Schedule findScheduleByIdOrElseThrow(Long id);
-
     List<ScheduleResponseDto> findScheduleByUserId(Long id);
+
+    Optional<String> findUserPwd(Long id, String password);
 
     int updateSchedule(Long id, String content, String pwd);
 
