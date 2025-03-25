@@ -49,7 +49,7 @@ src
 ```
 
 ## API 문서
-[![Swagger](https://raw.githubusercontent.com/SW00Y/ch3-schedule/main/docs/swagger/screenshot.png)](https://swooy.github.io/ch3-schedule/swagger/index.html)
+[![Swagger](docs/main.png)https://raw.githubusercontent.com/SW00Y/ch3-schedule/main/docs/swagger/screenshot.png)](https://swooy.github.io/ch3-schedule/swagger/index.html)
 
 ## ERD
 
