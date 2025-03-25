@@ -1,5 +1,6 @@
 package com.example.schedule.repository.schedule;
 
+import com.example.schedule.dto.schedule.ScheduleRequestDto;
 import com.example.schedule.dto.schedule.ScheduleResponseDto;
 import com.example.schedule.entity.schedule.Schedule;
 
@@ -18,9 +19,12 @@ public interface ScheduleRepository {
 
     Optional<String> findUserPwd(Long id, String password);
 
-    int updateSchedule(Long id, String content, String pwd);
+    Optional<String> findUserName(Long userId);
 
-    int deleteSchedule(Long id, String pwd);
+    int updateSchedule(Long id, String content);
 
+    int deleteSchedule(Long id);
+
+    List<ScheduleResponseDto> findSchedulesPage(int pageNum, int pageSize);
 
 }

@@ -64,6 +64,7 @@ public class JdbcTemplateUserRepository implements UserRepository {
         return jdbcTemplate.update("delete from user where id=? and email =?", id, email);
     }
 
+
     private RowMapper<User> userRowMapper() {
         return new RowMapper<User>() {
             @Override

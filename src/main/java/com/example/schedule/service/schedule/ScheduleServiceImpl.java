@@ -9,6 +9,7 @@ import com.example.schedule.repository.schedule.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +24,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto requestDto) {
+        String userName = findUser(requestDto.getUser_id());
+
         Schedule schedule = new Schedule(
                 requestDto.getUser_id(),
-                requestDto.getName(),
+                userName,
                 requestDto.getContent(),
                 requestDto.getPwd()
         );
@@ -52,11 +55,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Transactional
     @Override
-    public ScheduleResponseDto updateSchedule(Long id, String content, String pwd) {
-        checkContent(content);
-        validatePassword(id, pwd);
+    public ScheduleResponseDto updateSchedule(Long id,ScheduleRequestDto requestDto) {
 
-        scheduleRepository.updateSchedule(id, content, pwd);
+        checkContent(requestDto.getContent());
+        validatePassword(id, requestDto.getPwd());
+
+        scheduleRepository.updateSchedule(id, requestDto.getContent());
         Schedule schedule = getScheduleOrThrow(id);
         return new ScheduleResponseDto(schedule);
     }
@@ -64,10 +68,21 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public void deleteSchedule(Long id, String pwd) {
         validatePassword(id, pwd);
-        scheduleRepository.deleteSchedule(id, pwd);
+        scheduleRepository.deleteSchedule(id);
     }
 
-    
+    @Override
+    public List<ScheduleResponseDto> findSchedulesPage(int pageNum, int pageSize) {
+        List<ScheduleResponseDto> schedules = scheduleRepository.findSchedulesPage(pageNum, pageSize);
+
+        if (schedules.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return schedules;
+    }
+
+
     // 처리용 메소드
     public void checkContent(String content){
         if(content==null){
@@ -80,6 +95,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .orElseThrow(() -> new CustomException(ExceptionErrorCode.SCHEDULE_NOT_FOUND));
     }
 
+
     private void validatePassword(Long id, String pwd) {
         Optional<String> storedPwd = scheduleRepository.findUserPwd(id,pwd);
 
@@ -90,8 +106,16 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (!storedPwd.get().equals(pwd)) {
             throw new CustomException(ExceptionErrorCode.PASSWORD_ERROR);
         }
+    }
 
+    private String findUser(Long id) {
+        Optional<String> userName = scheduleRepository.findUserName(id);
 
+        if(userName.isEmpty()){
+            throw new CustomException(ExceptionErrorCode.USER_NOT_FOUND);
+        }
+
+        return userName.get();
     }
 
 

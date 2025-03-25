@@ -1,8 +1,10 @@
 package com.example.schedule.repository.user;
 
 import com.example.schedule.dto.user.UserResponseDto;
+import com.example.schedule.entity.schedule.Schedule;
 import com.example.schedule.entity.user.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {

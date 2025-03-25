@@ -37,10 +37,18 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
         parameters.put("content", schedule.getContent());
         parameters.put("pwd", schedule.getPwd());
         parameters.put("add_log", schedule.getAdd_log());
+        parameters.put("upp_log", schedule.getUpp_log());
 
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
 
         return new ScheduleResponseDto(key.longValue(),schedule.getUser_id(),schedule.getName(),schedule.getContent(),schedule.getPwd(),schedule.getAdd_log(),schedule.getUpp_log());
+    }
+
+    @Override
+    public Optional<String> findUserName(Long userId) {
+        String sql = "SELECT name FROM user WHERE id = ?";
+        List<String> result = jdbcTemplate.queryForList(sql, String.class, userId);
+        return result.stream().findFirst();
     }
 
     @Override
@@ -74,13 +82,22 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public int updateSchedule(Long id, String content, String pwd) {
+    public int updateSchedule(Long id, String content) {
         return jdbcTemplate.update("update schedule set content =?, upp_log =? where id=?", content, Timestamp.valueOf(LocalDateTime.now()), id);
     }
 
     @Override
-    public int deleteSchedule(Long id, String pwd) {
-        return jdbcTemplate.update("delete from schedule where id=? and pwd =?", id,pwd);
+    public int deleteSchedule(Long id) {
+        return jdbcTemplate.update("delete from schedule where id=?", id);
+    }
+
+    @Override
+    public List<ScheduleResponseDto> findSchedulesPage(int pageNum, int pageSize) {
+        String sql = "SELECT a.id, a.user_id, b.name, a.content, a.pwd, a.add_log, a.upp_log " +
+                "FROM schedule a JOIN user b ON a.user_id = b.id ORDER BY a.upp_log DESC LIMIT ? OFFSET ?";
+        int offset = (pageNum - 1) * pageSize;
+
+        return jdbcTemplate.query(sql,scheduleRowMapper(),pageSize,offset);
     }
 
     private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
