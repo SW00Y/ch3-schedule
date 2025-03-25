@@ -29,11 +29,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDto> handleRequestDto(MethodArgumentNotValidException e) {
+
         String errorCode = e.getFieldError().getDefaultMessage();
+
         ExceptionErrorCode code = ExceptionErrorCode.valueOf(errorCode);
 
         ExceptionDto exceptionDto = new ExceptionDto(code.getStatus().value(), code.getMessage());
-
         return ResponseEntity.status(code.getStatus()).body(exceptionDto);
     }
 }
