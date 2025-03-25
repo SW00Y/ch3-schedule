@@ -1,7 +1,7 @@
-package com.example.schedule.repository;
+package com.example.schedule.repository.schedule;
 
-import com.example.schedule.dto.ScheduleResponseDto;
-import com.example.schedule.entity.Schedule;
+import com.example.schedule.dto.schedule.ScheduleResponseDto;
+import com.example.schedule.entity.schedule.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -69,7 +69,8 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
     @Override
     public Optional<String> findUserPwd(Long id, String pwd) {
         String sql = "SELECT pwd FROM schedule WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, String.class, id));
+        List<String> result = jdbcTemplate.queryForList(sql, String.class, id);
+        return result.stream().findFirst();
     }
 
     @Override

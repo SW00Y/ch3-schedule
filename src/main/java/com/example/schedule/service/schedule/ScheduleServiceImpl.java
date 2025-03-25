@@ -1,17 +1,16 @@
-package com.example.schedule.service;
+package com.example.schedule.service.schedule;
 
-import com.example.schedule.dto.ScheduleRequestDto;
-import com.example.schedule.dto.ScheduleResponseDto;
-import com.example.schedule.entity.Schedule;
+import com.example.schedule.dto.schedule.ScheduleRequestDto;
+import com.example.schedule.dto.schedule.ScheduleResponseDto;
+import com.example.schedule.entity.schedule.Schedule;
 import com.example.schedule.exception.CustomException;
 import com.example.schedule.exception.ExceptionErrorCode;
-import com.example.schedule.repository.ScheduleRepository;
-import org.springframework.http.HttpStatus;
+import com.example.schedule.repository.schedule.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -56,6 +55,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponseDto updateSchedule(Long id, String content, String pwd) {
         checkContent(content);
         validatePassword(id, pwd);
+
         scheduleRepository.updateSchedule(id, content, pwd);
         Schedule schedule = getScheduleOrThrow(id);
         return new ScheduleResponseDto(schedule);
@@ -81,12 +81,17 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     private void validatePassword(Long id, String pwd) {
-        String storedPwd = scheduleRepository.findUserPwd(id,pwd)
-                .orElseThrow(() -> new CustomException(ExceptionErrorCode.SCHEDULE_NOT_FOUND));
+        Optional<String> storedPwd = scheduleRepository.findUserPwd(id,pwd);
 
-        if (!storedPwd.equals(pwd)) {
+        if(storedPwd.isEmpty()){
+            throw new CustomException(ExceptionErrorCode.SCHEDULE_NOT_FOUND);
+        }
+
+        if (!storedPwd.get().equals(pwd)) {
             throw new CustomException(ExceptionErrorCode.PASSWORD_ERROR);
         }
+
+
     }
 
 

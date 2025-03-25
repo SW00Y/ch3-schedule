@@ -1,6 +1,6 @@
-package com.example.schedule.dto;
+package com.example.schedule.dto.schedule;
 
-import com.example.schedule.entity.Schedule;
+import com.example.schedule.entity.schedule.Schedule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

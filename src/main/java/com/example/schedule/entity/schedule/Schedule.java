@@ -1,4 +1,4 @@
-package com.example.schedule.entity;
+package com.example.schedule.entity.schedule;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +18,7 @@ public class Schedule {
     private Timestamp add_log;
     private Timestamp upp_log;
 
-    public Schedule(Long user_id,String name, String content, String pwd) {
+    public Schedule(Long user_id, String name, String content, String pwd) {
         this.user_id = user_id;
         this.content = content;
         this.name = name;
