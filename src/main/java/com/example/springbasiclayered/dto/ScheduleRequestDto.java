@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class ScheduleRequestDto {
 
     private Long user_id;
+    private String name;
     private String content;
     private String pwd;
     private Timestamp add_log;

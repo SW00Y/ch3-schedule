@@ -42,34 +42,62 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
 
-        return new ScheduleResponseDto(key.longValue(),schedule.getUser_id(),schedule.getContent(),schedule.getPwd(),schedule.getAdd_log(),schedule.getUpp_log());
+        return new ScheduleResponseDto(key.longValue(),schedule.getUser_id(),schedule.getName(),schedule.getContent(),schedule.getPwd(),schedule.getAdd_log(),schedule.getUpp_log());
     }
 
     @Override
     public List<ScheduleResponseDto> findAllSchedules() {
-        return jdbcTemplate.query("select * from schedule ORDER BY upp_log desc", scheduleRowMapper());
+        String sql = "SELECT a.id, a.user_id, b.name, a.content, a.pwd, a.add_log, a.upp_log " +
+                "FROM schedule a JOIN user b ON a.user_id = b.id ORDER BY a.upp_log DESC";
+        return jdbcTemplate.query(sql, scheduleRowMapper());
     }
 
     @Override
     public Optional<Schedule> findScheduleById(Long id) {
-        List<Schedule> result = jdbcTemplate.query("select * from schedule where id=?", scheduleRowMapperV2(), id);
+        String sql = "SELECT a.id, a.user_id, b.name, a.content, a.pwd, a.add_log, a.upp_log " +
+                "FROM schedule a JOIN user b ON a.user_id = b.id WHERE a.id = ?";
+        List<Schedule> result = jdbcTemplate.query(sql, scheduleRowMapperV2(), id);
         return result.stream().findAny();
     }
 
     @Override
     public Schedule findScheduleByIdOrElseThrow(Long id) {
-        List<Schedule> result = jdbcTemplate.query("select * from schedule where id=?", scheduleRowMapperV2(), id);
+        String sql = "SELECT a.id, a.user_id, b.name, a.content, a.pwd, a.add_log, a.upp_log " +
+                "FROM schedule a JOIN user b ON a.user_id = b.id WHERE a.id = ?";
+
+        List<Schedule> result = jdbcTemplate.query(sql, scheduleRowMapperV2(), id);
 
         return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id));
     }
 
     @Override
-    public int updateSchedule(Long id, String content) {
+    public List<ScheduleResponseDto> findScheduleByUserId(Long id) {
+        String sql = "SELECT a.id, a.user_id, b.name, a.content, a.pwd, a.add_log, a.upp_log " +
+                "FROM schedule a JOIN user b ON a.user_id = b.id WHERE b.id = ?";
+
+        return jdbcTemplate.query(sql, scheduleRowMapper(),id);
+    }
+
+    @Override
+    public int updateSchedule(Long id, String content, String pwd) {
+
+
+        String getPwdSql = "SELECT pwd FROM schedule WHERE id = ?";
+        String schedulePwd = jdbcTemplate.queryForObject(getPwdSql, String.class, id);
+
+        if (schedulePwd == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "그런 일정이 없음");
+        }
+
+        if (!schedulePwd.equals(pwd)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
+
         return jdbcTemplate.update("update schedule set content =?, upp_log =? where id=?", content, Timestamp.valueOf(LocalDateTime.now()), id);
     }
 
     @Override
-    public int deleteSchedule(Long id) {
+    public int deleteSchedule(Long id, String pwd) {
         return jdbcTemplate.update("delete from schedule where id=?", id);
     }
 
@@ -80,6 +108,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
                 return new ScheduleResponseDto(
                         rs.getLong("id"),
                         rs.getLong("user_id"),
+                        rs.getString("name"),
                         rs.getString("content"),
                         rs.getString("pwd"),
                         rs.getTimestamp("add_log"),
@@ -96,6 +125,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
                 return new Schedule(
                         rs.getLong("id"),
                         rs.getLong("user_id"),
+                        rs.getString("name"),
                         rs.getString("content"),
                         rs.getString("pwd"),
                         rs.getTimestamp("add_log"),

@@ -24,6 +24,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto requestDto) {
         Schedule schedule = new Schedule(
                 requestDto.getUser_id(),
+                requestDto.getName(),
                 requestDto.getContent(),
                 requestDto.getPwd()
         );
@@ -42,24 +43,31 @@ public class ScheduleServiceImpl implements ScheduleService {
         return new ScheduleResponseDto(schedule);
     }
 
+    @Override
+    public List<ScheduleResponseDto> findScheduleByUserId(Long id) {
+        List<ScheduleResponseDto> allUserIdSchedule = scheduleRepository.findScheduleByUserId(id);
+        return allUserIdSchedule;
+    }
+
     @Transactional
     @Override
-    public ScheduleResponseDto updateSchedule(Long id, String content) {
+    public ScheduleResponseDto updateSchedule(Long id, String content, String pwd) {
         if (content == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The title and content are required values.");
         }
-        int updatedRow = scheduleRepository.updateSchedule(id, content);
+        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
+
+        int updatedRow = scheduleRepository.updateSchedule(schedule.getId(), content, pwd);
         if (updatedRow == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id);
         }
-        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
         return new ScheduleResponseDto(schedule);
     }
 
 
     @Override
-    public void deleteSchedule(Long id) {
-        int deletedRow = scheduleRepository.deleteSchedule(id);
+    public void deleteSchedule(Long id, String pwd) {
+        int deletedRow = scheduleRepository.deleteSchedule(id, pwd);
         if (deletedRow == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id);
         }
