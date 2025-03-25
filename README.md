@@ -48,8 +48,8 @@ src
 └── UserServiceImpl.java         // 구현체
 ```
 
-## API 설계서
-
+## API 문서
+[![Swagger](https://raw.githubusercontent.com/SW00Y/ch3-schedule/main/docs/swagger/screenshot.png)](https://swooy.github.io/ch3-schedule/swagger/index.html)
 
 ## ERD
 
