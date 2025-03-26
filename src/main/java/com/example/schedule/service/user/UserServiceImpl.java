@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
      *******************************/
     private User getUserOrThrowV2(Long id, String email) {
         return userRepository.findUserByIdEmail(id, email)
-                .orElseThrow(() -> new CustomException(ExceptionErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionErrorCode.USER_MAIL_NOT_FOUND));
     }
 
 

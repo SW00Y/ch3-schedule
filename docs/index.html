@@ -848,7 +848,31 @@
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
               <div class="app-desc">Version: v1</div>
             <hr>
-            <div>아 힘들다.
+            <div>
+                <h2>ch3-Schedule API 명세서</h2>
+                <br>
+                - createSchedule        : 일정생성 - RequestBody
+                <br>
+                - createUser            : 유저생성 - RequestBody
+                <br>
+                - deleteSchedule        : 일정ID, PWD로 일정삭제 - PathVariable id, RequestBody (Dto)pwd
+                <br>
+                - deleteUser            : 유저ID, EMAIL로 유저삭제 - PathVariable id, RequestParam email
+                <br>
+                - findAllSchedule       : 모든일정조회 -
+                <br>
+                - findScheduleById      : 일정ID로 일정조회 - PathVariable
+                <br>
+                - findScheduleByUserId  : 유저ID로 일정조회 - PathVariable
+                <br>
+                - findScheduleList      : 일정 페이지네이션(3개) - RequestParam page, size
+                <br>
+                - findUserById          : 유저ID로 유저조회 - PathVariable
+                <br>
+                - updateSchedule        : 일정ID, PWD로 일정내용수정- RequestParam id, RequestBody Dto(pwd)
+                <br>
+                - updateUser            : 유저ID, EMAIL로 유저 이름수정 - PathVariable, RequestBody Dto(email)
+                <br>
             </div>
           </div>
         </div>

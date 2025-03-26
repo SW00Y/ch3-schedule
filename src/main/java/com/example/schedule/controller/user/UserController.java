@@ -64,15 +64,14 @@ public class UserController {
     /**
      * 유저 삭제 API
      * @param id 유저id
-     * @param email 해당id 의 email
      * @return 성공시 200
      */
     @Operation(summary = "유저 삭제", description = "user Id, email 인증으로 유저 삭제")
     @Parameter(name = "id", description = "삭제할 유저의 ID", required = true)
     @Parameter(name = "email", description = "삭제할 유저의 email", required = true)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id, @RequestParam String email) {
-        userService.deleteUser(id, email);
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, @RequestBody UserRequestDto requestDto) {
+        userService.deleteUser(id, requestDto.getEmail());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
