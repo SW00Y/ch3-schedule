@@ -72,7 +72,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponseDto updateSchedule(Long id,ScheduleRequestDto requestDto) {
 
         //예외처리 영역
-        checkContent(requestDto.getContent());  //content 내용이 null인지 확인
         validatePassword(id, requestDto.getPwd()); //id, pwd가 일치하는지 확인
 
         
@@ -110,16 +109,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     /*******************************
      * 예외처리 위한 메소드 목록
      *******************************/
-
-
-    /*******************************
-     * content 값이 null인 경우 예외처리
-     *******************************/
-    public void checkContent(String content){
-        if(content==null){
-            throw new CustomException(ExceptionErrorCode.CONTENT_NULL);
-        }
-    }
 
     /*******************************
      * 찾고자 하는 id의 일정이 존재하지 않는 경우 예외처리

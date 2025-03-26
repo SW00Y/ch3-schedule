@@ -13,11 +13,6 @@ public class GlobalExceptionHandler {
      * @return ExceptionDto(상태코드 + 메세지)
      *******************************/
 
-    /******
-     *
-     * @param e
-     * @return
-     */
     @ExceptionHandler
     public ResponseEntity<ExceptionDto> handle(CustomException e) {
 
@@ -26,7 +21,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getStatus()).body(exceptionDto);
     }
 
-
+    /******
+     * ScheduleRequestDto의 조건에 따른 예외처리 부분
+     * @param e (MethodArgumentNotValidException) Dto 유효성 검사
+     * @return ExceptionDto(상태코드 + 메세지)
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDto> handleRequestDto(MethodArgumentNotValidException e) {
 

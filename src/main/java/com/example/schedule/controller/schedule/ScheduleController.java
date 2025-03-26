@@ -91,10 +91,10 @@ public class ScheduleController {
      * @param requestDto 일정 요청 데이터(비밀번호 pwd)
      * @return 삭제 성공 시 200 응답
      */
-    @Operation(summary = "일정 삭제", description = "schedule의 id로 일정 삭제, requestDto의 pwd로 일정 pwd비교")
+    @Operation(summary = "일정 삭제", description = "schedule의 id로 일정 삭제, requestDto의 pwd로 일정 pwd비교 - Dto로 pwd 만 필요하기 때문에 @Valid 삭제")
     @Parameter(name = "id", description = "수정할 schedule의 id", required = true)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable Long id, @RequestBody @Valid ScheduleRequestDto requestDto) {
+    public ResponseEntity<Void> deleteSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto requestDto) {
         scheduleService.deleteSchedule(id, requestDto.getPwd());
         return new ResponseEntity<>(HttpStatus.OK);
     }
