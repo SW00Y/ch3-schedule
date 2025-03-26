@@ -68,7 +68,6 @@ public class UserController {
      */
     @Operation(summary = "유저 삭제", description = "user Id, email 인증으로 유저 삭제")
     @Parameter(name = "id", description = "삭제할 유저의 ID", required = true)
-    @Parameter(name = "email", description = "삭제할 유저의 email", required = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id, @RequestBody UserRequestDto requestDto) {
         userService.deleteUser(id, requestDto.getEmail());
